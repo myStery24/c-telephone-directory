@@ -1,5 +1,4 @@
-// search and sort not done yet
-// search functions : error in searching
+//sort not done yet
 
 #include <stdio.h>
 #include <stdlib.h> // system() , exit()
@@ -7,30 +6,31 @@
 #include <string.h> // strcmp() , stricmp()
 #include <windows.h>
 
-//defining the properties of the fields used in the program
+/* Defining the properties of the fields used in the program */
 #define FSTNAME 20
 #define LSTNAME 20
 #define PHONE_NO 20
 
-// for colour
+/* For colour */
 void color(short x) {
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x); // windows.h
 }
 
-// functions
+/* Functions */
 void menu(); // main menu
 void addrecord(); // add contact
 void display(); // show all contacts
 void deleterecord(); // delete a single contact by name
 void deleteall(); // delete all contacts
 void sort(); // not done yet
-void searchByName(); // search by name // error, logic error
-void searchByPhoneNumber(); // search by entering phone number 
-void searchSelection();
+int searchByName(); // search by first name and last name
+void show(char *FirstName, char *LastName, char *PhoneNumber); // display the contact details after searching
+int searchByPhoneNumber(); // search by entering phone number 
+void searchSelection(); // choose between 1 (search by name) or 2 (search by phone no)
 int countContacts(); // a.k.a countNodes() , counts total number of contacts in the list
 void ClearScreen(); // clear screen
 
-// create a linked list struct
+/* Create a linked list node structure */
 struct Contact_Info {
   char FirstName[FSTNAME]; // data
   char LastName[LSTNAME]; // data
@@ -42,15 +42,18 @@ struct Contact_Info {
 //struct Contact_Info *tail = NULL;
 
 int main() {
-
   menu();
   return 0;
 }
 
+/*
+ * Create a list of n contacts (nodes)
+ */
 void addrecord() {
-  struct Contact_Info *newContact = (struct Contact_Info *) malloc(sizeof(struct Contact_Info));
+  // create new contact (node)
+  struct Contact_Info *newContact = (struct Contact_Info*) malloc(sizeof(struct Contact_Info));
 
-  // input data of node from user
+  // input data of node from the user
   printf("\n\t\t-----------------------------------------\n\t\t\t\tNew Contact\n\t\t-----------------------------------------\n");
   printf("\n\t\tEnter first name: ");
   fgets(newContact->FirstName, 20, stdin);
@@ -60,16 +63,18 @@ void addrecord() {
   newContact->LastName[strlen(newContact-> LastName) - 1] = 0;
   printf("\n\t\tEnter phone no.: ");
   fgets(newContact->PhoneNumber, 11, stdin);
+  printf("\n\t\t-----------------------------------------\n");
   newContact->PhoneNumber[strlen(newContact->PhoneNumber) - 1] = 0;
 
-  newContact->next = NULL;
+  newContact->next = NULL; // link address field to NULL
 
+  // if the list is empty
   if (head == NULL) {
     printf("\nCreating your first contact...\n");
     head = newContact;
     tail = newContact;
   } else {
-    tail->next = newContact;
+    tail->next = newContact; // link previous node with newContact
     tail = newContact;
   }
   printf("\nContact added to PhoneBook successfully.\n");
@@ -79,11 +84,14 @@ void addrecord() {
   ClearScreen(); // clear screen
 }
 
+/*
+ * Display entire list
+ */
 void display() {
   struct Contact_Info *temp = head;
   int x = 0;
 
-  // return if list is empty
+  // return if the list is empty
   if (head == NULL) {
     printf("\nSorry, your PhoneBook is empty.\nAdd new contact by choosing 1.\a\n");
     return;
@@ -93,38 +101,42 @@ void display() {
   
   while (temp != NULL) {
     printf("\n\t\t---------------------------------------\n\t\t\t\tYour Contact\n\t\t---------------------------------------\n");
-    printf("\n\t\t(%d)\n", x + 1);
-    printf("\t\tName\t : %s %s\n", temp->FirstName, temp->LastName);
-    printf("\t\tPhone no.: %s", temp->PhoneNumber);
+    printf("\n\t\t(%d)\n", x + 1); // print index of current node, ie. first contact in the list = 1
+    printf("\t\tName\t : %s %s\n", temp->FirstName, temp->LastName); // print first name and last name of current node
+    printf("\t\tPhone no.: %s", temp->PhoneNumber); // print phone no. of current node
     printf("\n\n\t\t--------------------------------------\n\n");
     temp = temp->next; // move to next node
     x++;
-	}
-	
+  }
 	printf("\n Press any key");
 	getch(); // get input from user's keyboard
 	ClearScreen(); // clear screen
 }
 
+/*
+ * Delete a single contact from the list
+ */
 void deleterecord() {
-  char delFirstName[20], delLastName[20];
+  char delFirstName[20], delLastName[20]; // array to store the inputs from user
   struct Contact_Info *prev, *curr;
   int flag;
-
+	
   if (head == NULL) {
     printf("\nSorry, your PhoneBook is empty.\a\n");
     return; // exit(1)
   }
 
-  printf("\n\t\t-------------------------------------------\n\t\t\t\tDeleting Contact\n\t\t-------------------------------------------\n");
+  printf("\n-------------------------------------------------------------------------\n\t\t\t\tDeleting Contact\n-------------------------------------------------------------------------\n");
   printf("\nEnter the contact's first name: ");
   /* no need '&' operator for string
   in case of a string (character array), the variable itself points to the first element of the array in question*/
   scanf(" %[^\n]%*c", delFirstName);
   printf("\nEnter the contact's last name: ");
   scanf(" %[^\n]%*c", delLastName);
-
-  /* check if head node contains key*/
+  printf("\n-------------------------------------------------------------------------\n");
+  ClearScreen();
+  
+  // check if head node contains a contact
   while (head != NULL && !strcmp(head->FirstName, delFirstName) && !strcmp(head->LastName, delLastName)) {
     // get reference of head node
     prev = head;
@@ -146,10 +158,10 @@ void deleterecord() {
   curr = head; // use curr to traverse the list, head as reference to the list's first element
   prev = NULL; // use prev to point to the previous element when iterating through the list
 
-  /* for each node in the list */
+  // for each contact (node) in the list
   while (curr != NULL) {
     // current node contains (pointed) name to be deleted
-    if (!strcmp(curr->FirstName, delFirstName) && !strcmp(curr-> LastName, delLastName)) {
+    if (!strcmp(curr->FirstName, delFirstName) && !strcmp(curr->LastName, delLastName)) {
       // current node is the last element (tail)
       if (!curr->next) {
         tail = prev; // copy reference of tail node to prev node
@@ -169,18 +181,21 @@ void deleterecord() {
     prev = curr; // assign current node to previous node
     curr = curr-> next; // move current node to next
   }
-
+  
+  // if there is no matching
   if (!flag) {
     printf("\nContact %s %s not found.\a\n", delFirstName, delLastName);
   }
 
   printf("\n Press any key");
   getch(); // get input from user's keyboard
-  ClearScreen(); // clear screen
 }
 
+/*
+ * Delete all the contacts from the list
+ */
 void deleteall() {
-  struct Contact_Info * temp;
+  struct Contact_Info *temp;
   int countToDelete = 0; // initialize count
 
   if (head == NULL) {
@@ -208,10 +223,15 @@ void sort() {
 
 }
 
-void searchByName() {
-  int index;
-  char searchFirstName[20], searchLastName[20];
-  struct Contact_Info * curNode;
+/*
+ * Search a contact with given first name and last name in linked list.
+ * It returns a positive integer specifying index of the contact found in the linked list on success,
+ * otherwise returns -1.
+ */
+int searchByName() {
+  int index, flag;
+  char searchFirstName[20], searchLastName[20]; // array to store the inputs from user
+  struct Contact_Info *curNode;
 
   index = 0;
   curNode = head;
@@ -223,82 +243,89 @@ void searchByName() {
     scanf(" %[^\n]%*c", searchFirstName);
     printf("\nEnter contact's last name: ");
     scanf(" %[^\n]%*c", searchLastName);
-
+    ClearScreen(); // clear screen
+	
     // iterate till last element until contact's name is not matched
-    while (curNode != NULL && (curNode->FirstName != searchFirstName) && (curNode->LastName != searchLastName)) {
-      // found contact
-      if (!stricmp(curNode->FirstName, searchFirstName) && !stricmp(curNode->LastName, searchLastName)) // == 1
-      {
-        curNode = curNode->next;
-        printf("first:  %s", curNode);
-        printf("\nContact found!\n");
-        printf("\n\t\t\t  About %s %s", curNode->FirstName, curNode->LastName);
-        printf("\n\n\t\t--------------------------------------\n\n");
-        printf("\t\tName\t : %s %s\n", curNode->FirstName, curNode->LastName);
-        printf("\t\tPhone no.: %s", curNode->PhoneNumber);
-        printf("\n\n\t\t--------------------------------------\n\n");
-        index++;
-        curNode = curNode-> next; // move to next node
-        return;
-      } else {
-        printf("\nSorry, I can't find anything. There is no such contact (%s %s) in your PhoneBook.\n", searchFirstName, searchLastName);
-        printf("\nMay be you are looking for %s %s?\n", curNode-> FirstName, curNode->LastName);
-        break;
-      }
-    }
+    while (curNode != NULL && curNode->FirstName != searchFirstName && curNode->LastName != searchLastName) {
+    	flag = 1;
+		index++; // increment the index if not matched
+		if (strcmp(curNode->FirstName, searchFirstName) == 0 && strcmp(curNode->LastName, searchLastName) == 0) {
+			printf("\nContact found at position %d!\n", index);
+			printf("\nYou are looking for %s %s.\n", searchFirstName, searchLastName);
+			show(curNode->FirstName, curNode->LastName, curNode->PhoneNumber);
+		}
+		curNode = curNode->next; // move to next node
+	}
+	printf("\n Press any key\n");
+  	getch(); // get input from user's keyboard
+  	printf("\n If contact is found, the contact details will be displayed as above. Otherwise, please try again.\n"); //printf("\nSorry, I can't find anything. There is no such contact (%s %s) in your PhoneBook.\n", searchFirstName, searchLastName);
+  	printf("\n --------------------------------------------------------------------------------------------\n");
+	return (curNode != NULL) ? index : -1; // if curNode is not NULL, and contact not found, return -1
   }
-
-  printf("\n Press any key");
-  getch(); // get input from user's keyboard
-  ClearScreen(); // clear screen
 }
 
-void searchByPhoneNumber() {
-  int index;
-  char searchPhoneNumber[20];
-  struct Contact_Info * curNode;
-
-  index = 0;
-  curNode = head;
-
-  if (curNode == NULL) {
-    printf("\nSorry, there is nothing to search, your PhoneBook is EMPTY.\a\n");
-  } else {
-    printf("\nEnter contact's phone no.: ");
-    scanf("%11s", & searchPhoneNumber);
-
-    // iterate till last element until contact's phone no. is not matched
-    while (curNode != NULL && (curNode-> PhoneNumber != searchPhoneNumber)) {
-      // found contact
-      if (!stricmp(curNode->PhoneNumber, searchPhoneNumber)) // == 1
-      {
-        printf("\nContact found!\n");
-        printf("\n\t\t\t  About %s %s", curNode->FirstName, curNode->LastName);
-        printf("\n\n\t\t--------------------------------------\n\n");
-        printf("\t\tName\t : %s %s\n", curNode->FirstName, curNode->LastName);
-        printf("\t\tPhone no.: %s", curNode->PhoneNumber);
-        printf("\n\n\t\t--------------------------------------\n\n");
-        index++; // printf("%d", index);
-        curNode = curNode->next; // move to next node
-      } else {
-        printf("\nSorry, I can't find anything. \n%s hasn't added to your PhoneBook.\n", searchPhoneNumber);
-        break;
-      }
-    }
-  }
-
-  printf("\n Press any key");
-  getch(); // get input from user's keyboard
-  ClearScreen(); // clear screen
+/*
+ * Display the details of contact after the searching functions.
+ * It prints out the name and phone no.
+ */
+void show(char *FirstName, char *LastName, char *PhoneNumber) {
+    printf("\n\n\t\t--------------------------------------");
+    printf("\n\t\t\t  About %s %s", FirstName, LastName);
+    printf("\n\t\t--------------------------------------\n\n");
+    printf("\t\tName\t : %s %s\n", FirstName, LastName);
+    printf("\t\tPhone no.: %s", PhoneNumber);
+    printf("\n\n\t\t--------------------------------------\n\n");
 }
 
+/*
+ * Search a contact with given phone no. in linked list.
+ * It returns a positive integer specifying index of the contact found in the linked list on success,
+ * otherwise returns -1.
+ */
+int searchByPhoneNumber() {
+	int index;
+	char searchPhoneNumber[20]; // array to store the input from user
+	struct Contact_Info *curNode;
+	
+	index = 0;
+	curNode = head;
+	
+	if(curNode == NULL) {
+		printf("\nSorry, there is nothing to search, your PhoneBook is EMPTY.\a\n");
+	}
+	else {
+		printf("\nEnter contact's phone no.: ");
+		scanf("%11s", &searchPhoneNumber); // read only 11 digits
+		ClearScreen(); // clear screen
+		
+		// iterate till the last element until the phone number is not matched
+		while(curNode != NULL && curNode->PhoneNumber != searchPhoneNumber) {
+			index++; // increment the index if not matched
+			if(strcmp(curNode->PhoneNumber, searchPhoneNumber) == 0) {
+				printf("\nFound at position %d", index);
+				show(curNode->FirstName, curNode->LastName, curNode->PhoneNumber);
+			}
+			curNode = curNode->next; // move to next node
+		}
+		printf("\n If contact is found, the contact details will be displayed as above. Otherwise, please try again.\n");
+		printf("\n Press any key\n");
+  		getch(); // get input from user's keyboard
+		printf("\n --------------------------------------------------------------------------------------------\n");
+		return (curNode != NULL) ? index : -1; // if curNode is not NULL, and contact not found, return -1
+	}
+}
+
+/*
+ * Ask the selection from user
+ * [1] Search by name or [2] Search by phone number
+ */
 void searchSelection() {
   int choice;
 
-  printf("\n1. Search by name");
-  printf("\n2. Search by phone number");
-  printf("\n\nEnter your choice (1 - 2): ");
-  scanf("%1d", & choice);
+  printf("\n[1] Search by name");
+  printf("\n[2] Search by phone number");
+  printf("\n\nEnter your choice [1 - 2]: ");
+  scanf("%1d", &choice); // read only 1 digit
   switch (choice) {
   case 1:
     searchByName();
@@ -312,10 +339,12 @@ void searchSelection() {
   }
 }
 
-// done
+/*
+ * Counts total number of contacts (nodes) in the list
+ */
 int countContacts() {
   int count = 0;
-  struct Contact_Info * temp = head;
+  struct Contact_Info *temp = head;
 
   while (temp != NULL) {
     count++;
@@ -326,6 +355,9 @@ int countContacts() {
 
 }
 
+/*
+ * The menu for this program
+ */
 void menu() {
   int choice, ch, total;
   char toConvert[20];
@@ -335,16 +367,15 @@ void menu() {
     printf("\n\t\t\t\t You have %d contact(s)\n", countContacts());
     printf("\n\n\t\t\t\t\t MENU\t\t\n\n");
     printf("\n\t\t\t\tPhoneBook Options");
-    printf("\n\n\t1.\tCreate new contact");
-    printf("\n\t2.\tDelete contact");
-    printf("\n\t3.\tSort the contacts list");
-    printf("\n\t4.\tDisplay contacts");
-    printf("\n\t5.\tLook up for contact's information");
-    printf("\n\t6.\tDelete ALL contacts");
-    printf("\n\t7.\tExit PhoneBook");
-    printf("\n\nSelect an option from the menu (1 - 8): ");
-    // scanf("%1d", &choice);
-    choice = atoi(fgets(toConvert, 20, stdin));
+    printf("\n\n\t[1]\tCreate new contact");
+    printf("\n\t[2]\tDelete contact");
+    printf("\n\t[3]\tSort the contacts list");
+    printf("\n\t[4]\tDisplay contacts");
+    printf("\n\t[5]\tLook up for contact's information");
+    printf("\n\t[6]\tDelete ALL contacts");
+    printf("\n\t[7]\tExit PhoneBook");
+    printf("\n\nSelect an option from the menu [1 - 8]: ");
+    choice = atoi(fgets(toConvert, 20, stdin)); // scanf("%1d", &choice);
 
     switch (choice) {
     case 1:
@@ -367,7 +398,7 @@ void menu() {
       break;
     case 6:
       printf("\nDelete all the contacts? (y/n): ");
-      scanf("%1c", & ch);
+      scanf("%1c", &ch);
       if (ch == 'y' || ch == 'Y') {
         deleteall();
       }
@@ -381,6 +412,7 @@ void menu() {
       printf("\nYou have chosen to exit the PhoneBook.\n");
       break;
     default:
+      ClearScreen();
       printf("\nInvalid option: %d \n", choice);
       break;
     }
@@ -391,6 +423,10 @@ void menu() {
   }
 }
 
+/*
+ * Utility function
+ * Just to clear the screen
+ */
 void ClearScreen() {
   system("cls");
 }
