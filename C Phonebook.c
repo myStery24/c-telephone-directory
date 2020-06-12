@@ -2,7 +2,7 @@
 // Fantastic 5
 // lee Zi Hui
 // AI190244
-// Last modified: 6/12/20 @ 6:36 PM
+// Last modified: 6/13/20 @ 6:08 AM
 
 #include <stdio.h>
 #include <stdlib.h> // system() , exit()
@@ -26,7 +26,7 @@ void addrecord(); // add contact
 void display(); // show all contacts
 void deleterecord(); // delete a single contact by name
 void deleteall(); // delete all contacts
-void sort(); // sort by first name alphabetically
+void sort(); // sort by first name and last name alphabetically
 int searchByName(); // search by first name and last name
 void show(char *FirstName, char *LastName, char *PhoneNumber); // display the contact details after searching
 int searchByPhoneNumber(); // search by entering phone number 
@@ -221,7 +221,8 @@ void deleteall() {
 }
 
 /*
- * Sort contact list by first name alphabetically
+ * Sort contact list by name alphabetically
+ * If both the first name is the same, sort the last name
  */
 void sort() {
 	struct Contact_Info *node1, *node2, *temp, t;
@@ -233,25 +234,39 @@ void sort() {
 		printf("\nSorry, I can't sort the PhoneBook. You have only ONE contact.\n");
 		return; // call menu()
 	} else {
+		// iterate the nodes
 		for(node1 = head; node1; node1 = node1->next) {
 			for(node2 = node1->next; node2; node2 = node2->next ) { 
+				// sort first name
+				// "a" and "A" are different in strcmp,
+				// to neglect the "a" and "A", consider using stricmp
 				// if the first value is bigger than the second value
 				if(strcmp(node1->FirstName, node2->FirstName) > 0) {
 					t = *node1; // store the value of the node1 pointer in t
 					*node1 = *node2; // swap the two values
 					*node2 = t; // the value that is initially stored by node1 pointer is passed to node2 pointer
-					
-					// swap node1 and node2 by swapping their next node links
-					temp = node1->next; 
-					node1->next = node2->next;
-					node2->next = temp;
+				} else {
+					// sort last name
+					// if both the first name is the same,
+					if (strcmp(node1->FirstName, node2->FirstName) == 0) {
+						// check the last name
+						if (strcmp(node1->LastName, node2->LastName) > 0) {
+							t = *node1;
+							*node1 = *node2;
+							*node2 = t;
+						}
+					}
+				}
+				// swap node1 and node2 by swapping their next node links
+				temp = node1->next; 
+				node1->next = node2->next;
+				node2->next = temp;
 				}
 			}
 		}
 		ClearScreen(); // clear screen
 		printf("\nSorted contact list successfully.\n");
 		display();	// display sorted list
-	}
 }
 
 /*
