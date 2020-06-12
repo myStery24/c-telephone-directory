@@ -1,19 +1,23 @@
-//sort not done yet
+// Project: C phonebook
+// Fantastic 5
+// lee Zi Hui
+// AI190244
+// Last modified: 6/12/20 @ 8:43 AM 
 
 #include <stdio.h>
 #include <stdlib.h> // system() , exit()
 #include <conio.h> // getch()
-#include <string.h> // strcmp() , stricmp()
+#include <string.h> // strcmp() , stricmp() , strcpy()
 #include <windows.h>
 
 /* Defining the properties of the fields used in the program */
 #define FSTNAME 20
 #define LSTNAME 20
-#define PHONE_NO 20
+#define PHONE_NO 11
 
 /* For colour */
 void color(short x) {
-  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x); // windows.h
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x); // windows.h
 }
 
 /* Functions */
@@ -22,7 +26,7 @@ void addrecord(); // add contact
 void display(); // show all contacts
 void deleterecord(); // delete a single contact by name
 void deleteall(); // delete all contacts
-void sort(); // not done yet
+void sort(); // sort by first name alphabetically //  Error - doesn't iterate through the entire list, rerun this function manually (enter 3) to sort the list
 int searchByName(); // search by first name and last name
 void show(char *FirstName, char *LastName, char *PhoneNumber); // display the contact details after searching
 int searchByPhoneNumber(); // search by entering phone number 
@@ -38,8 +42,8 @@ struct Contact_Info {
   struct Contact_Info * next; // address
 }*head, *tail;
 
-//struct Contact_Info *head = NULL;
-//struct Contact_Info *tail = NULL;
+// struct Contact_Info *head = NULL;
+// struct Contact_Info *tail = NULL;
 
 int main() {
   menu();
@@ -52,17 +56,17 @@ int main() {
 void addrecord() {
   // create new contact (node)
   struct Contact_Info *newContact = (struct Contact_Info*) malloc(sizeof(struct Contact_Info));
-
+  	
   // input data of node from the user
   printf("\n\t\t-----------------------------------------\n\t\t\t\tNew Contact\n\t\t-----------------------------------------\n");
   printf("\n\t\tEnter first name: ");
-  fgets(newContact->FirstName, 20, stdin);
+  fgets(newContact->FirstName, FSTNAME, stdin); // FSTNAME = 20
   newContact->FirstName[strlen(newContact->FirstName) - 1] = 0; // printf("%d", newContact->name[strlen(newContact->name) - 1]);
   printf("\n\t\tEnter last name: ");
-  fgets(newContact->LastName, 20, stdin);
+  fgets(newContact->LastName, LSTNAME, stdin); // LSTNAME = 20
   newContact->LastName[strlen(newContact-> LastName) - 1] = 0;
   printf("\n\t\tEnter phone no.: ");
-  fgets(newContact->PhoneNumber, 11, stdin);
+  fgets(newContact->PhoneNumber, PHONE_NO, stdin); // PHONE_NO = 11
   printf("\n\t\t-----------------------------------------\n");
   newContact->PhoneNumber[strlen(newContact->PhoneNumber) - 1] = 0;
 
@@ -126,7 +130,7 @@ void deleterecord() {
     return; // exit(1)
   }
 
-  printf("\n-------------------------------------------------------------------------\n\t\t\t\tDeleting Contact\n-------------------------------------------------------------------------\n");
+  printf("\n\t\t-----------------------------------------\n\t\t\t\tDeleting Contact\n\t\t-----------------------------------------\n");
   printf("\nEnter the contact's first name: ");
   /* no need '&' operator for string
   in case of a string (character array), the variable itself points to the first element of the array in question*/
@@ -219,8 +223,47 @@ void deleteall() {
   ClearScreen(); // clear screen
 }
 
+/*
+ * Sort contact list by first name alphabetically
+ */
 void sort() {
-
+	char fn[20], ln[20], p[20];
+	struct Contact_Info *node1, *node2;
+	
+	node2 = head;
+	node1 = node2->next;
+	
+	if (head == NULL) {
+		printf("\nError!\nYour PhoneBook is empty, there is nothing to sort.\n");
+		exit(1); // exit because of error occurs
+	} else if (head != NULL && head->next == NULL) {
+		printf("\nSorry, I can't sort the PhoneBook. You have only ONE contact.\n");
+		return; // call menu()
+	} else {
+		while (node1 != NULL && node2 != NULL && node1->FirstName > node2->FirstName) {
+			if (strcmp(node2->FirstName, node1->FirstName) > 0)
+			{
+				// first name
+				strcpy(fn, node1->FirstName);
+				strcpy(node1->FirstName, node2->FirstName);
+				strcpy(node2->FirstName, fn);
+				// last name
+				strcpy(ln, node1->LastName);
+				strcpy(node1->LastName, node2->LastName);
+				strcpy(node2->LastName, ln);
+				// phone number
+				strcpy(p, node1->PhoneNumber);
+				strcpy(node1->PhoneNumber, node2->PhoneNumber);
+				strcpy(node2->PhoneNumber, p);
+			}
+			node2 = node2->next; // move node2 to next
+			node1 = node1->next; // move node1 to next
+		}
+	}
+	ClearScreen(); // clear screen
+	printf("\nContact list sorted successfully.\n");
+	display(); // display the sorted list
+	printf("\nNote: If there is contact not sorted correctly, please enter 3 again.\n");
 }
 
 /*
@@ -259,7 +302,7 @@ int searchByName() {
 	printf("\n Press any key\n");
   	getch(); // get input from user's keyboard
   	printf("\n If contact is found, the contact details will be displayed as above. Otherwise, please try again.\n"); //printf("\nSorry, I can't find anything. There is no such contact (%s %s) in your PhoneBook.\n", searchFirstName, searchLastName);
-  	printf("\n --------------------------------------------------------------------------------------------\n");
+  	printf("\n -------------------------------------------------------------------------------------------------\n");
 	return (curNode != NULL) ? index : -1; // if curNode is not NULL, and contact not found, return -1
   }
 }
@@ -322,9 +365,13 @@ int searchByPhoneNumber() {
 void searchSelection() {
   int choice;
 
-  printf("\n[1] Search by name");
-  printf("\n[2] Search by phone number");
-  printf("\n\nEnter your choice [1 - 2]: ");
+  color(15); printf("\n[1]");
+  color(7); printf(" Search by name");
+  color(15); printf("\n[2]");
+  color(7); printf(" Search by phone number");
+  color(7); printf("\n\nEnter your choice");
+  color(15); printf(" [1 - 2]");
+  color(7); printf(": ");
   scanf("%1d", &choice); // read only 1 digit
   switch (choice) {
   case 1:
@@ -352,7 +399,6 @@ int countContacts() {
   }
 
   return count;
-
 }
 
 /*
@@ -364,17 +410,28 @@ void menu() {
 
   // infinite loop
   for (;;) {
-    printf("\n\t\t\t\t You have %d contact(s)\n", countContacts());
-    printf("\n\n\t\t\t\t\t MENU\t\t\n\n");
-    printf("\n\t\t\t\tPhoneBook Options");
-    printf("\n\n\t[1]\tCreate new contact");
-    printf("\n\t[2]\tDelete contact");
-    printf("\n\t[3]\tSort the contacts list");
-    printf("\n\t[4]\tDisplay contacts");
-    printf("\n\t[5]\tLook up for contact's information");
-    printf("\n\t[6]\tDelete ALL contacts");
-    printf("\n\t[7]\tExit PhoneBook");
-    printf("\n\nSelect an option from the menu [1 - 8]: ");
+    color(7); printf("\n\t\t\t\t - You have"); // 7 = light gray
+    color(15); printf(" %d"); // 15 = white
+    color(7); printf(" contact(s) -\n", countContacts());
+    color(11); printf("\n\n\t\t\t\t\t  MENU\t\t\n\n"); // 11 = light cyan
+    color(14); printf("\n\t\t\t\t   PhoneBook Options"); // 14 = yellow
+	color(15); printf("\n\n\t[1]\t");
+	color(7); printf("Create new contact");
+	color(15); printf("\n\t[2]\t");
+    color(7); printf("Delete contact");
+    color(15); printf("\n\t[3]\t");
+    color(7); printf("Sort the contacts list");
+    color(15); printf("\n\t[4]\t");
+    color(7); printf("Display contacts");
+    color(15); printf("\n\t[5]\t");
+    color(7); printf("Look up for contact's information");
+    color(15); printf("\n\t[6]\t");
+    color(7); printf("Delete ALL contacts");
+    color(15); printf("\n\t[7]\t");
+    color(7); printf("Exit PhoneBook");
+    color(7); printf("\n\nSelect an option from the menu");
+    color(15); printf(" [1 - 8]");
+    color(7); printf(": ");
     choice = atoi(fgets(toConvert, 20, stdin)); // scanf("%1d", &choice);
 
     switch (choice) {
