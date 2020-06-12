@@ -13,7 +13,7 @@
 /* Defining the properties of the fields used in the program */
 #define FSTNAME 20
 #define LSTNAME 20
-#define PHONE_NO 11
+#define PHONE_NO 13
 
 /* For colour */
 void color(short x) {
@@ -63,7 +63,7 @@ void addrecord() {
   fgets(newContact->LastName, LSTNAME, stdin); // LSTNAME = 20
   newContact->LastName[strlen(newContact-> LastName) - 1] = 0;
   printf("\n\t\tEnter phone no.: ");
-  fgets(newContact->PhoneNumber, PHONE_NO, stdin); // PHONE_NO = 11
+  fgets(newContact->PhoneNumber, PHONE_NO, stdin); // PHONE_NO = 13
   printf("\n\t\t-----------------------------------------\n");
   newContact->PhoneNumber[strlen(newContact->PhoneNumber) - 1] = 0;
 
