@@ -2,12 +2,12 @@
 // Fantastic 5
 // lee Zi Hui
 // AI190244
-// Last modified: 6/12/20 @ 8:43 AM 
+// Last modified: 6/12/20 @ 6:36 PM
 
 #include <stdio.h>
 #include <stdlib.h> // system() , exit()
 #include <conio.h> // getch()
-#include <string.h> // strcmp() , stricmp() , strcpy()
+#include <string.h> // strcmp() , stricmp()
 #include <windows.h>
 
 /* Defining the properties of the fields used in the program */
@@ -26,7 +26,7 @@ void addrecord(); // add contact
 void display(); // show all contacts
 void deleterecord(); // delete a single contact by name
 void deleteall(); // delete all contacts
-void sort(); // sort by first name alphabetically //  Error - doesn't iterate through the entire list, rerun this function manually (enter 3) to sort the list
+void sort(); // sort by first name alphabetically
 int searchByName(); // search by first name and last name
 void show(char *FirstName, char *LastName, char *PhoneNumber); // display the contact details after searching
 int searchByPhoneNumber(); // search by entering phone number 
@@ -36,18 +36,15 @@ void ClearScreen(); // clear screen
 
 /* Create a linked list node structure */
 struct Contact_Info {
-  char FirstName[FSTNAME]; // data
-  char LastName[LSTNAME]; // data
-  char PhoneNumber[PHONE_NO]; // data
-  struct Contact_Info * next; // address
+ char FirstName[FSTNAME]; // data
+ char LastName[LSTNAME]; // data
+ char PhoneNumber[PHONE_NO]; // data
+ struct Contact_Info * next; // address
 }*head, *tail;
 
-// struct Contact_Info *head = NULL;
-// struct Contact_Info *tail = NULL;
-
 int main() {
-  menu();
-  return 0;
+	menu();
+	return 0;
 }
 
 /*
@@ -112,9 +109,9 @@ void display() {
     temp = temp->next; // move to next node
     x++;
   }
-	printf("\n Press any key");
-	getch(); // get input from user's keyboard
-	ClearScreen(); // clear screen
+  printf("\n Press any key");
+  getch(); // get input from user's keyboard
+  ClearScreen(); // clear screen
 }
 
 /*
@@ -227,11 +224,7 @@ void deleteall() {
  * Sort contact list by first name alphabetically
  */
 void sort() {
-	char fn[20], ln[20], p[20];
-	struct Contact_Info *node1, *node2;
-	
-	node2 = head;
-	node1 = node2->next;
+	struct Contact_Info *node1, *node2, *temp, t;
 	
 	if (head == NULL) {
 		printf("\nError!\nYour PhoneBook is empty, there is nothing to sort.\n");
@@ -240,30 +233,25 @@ void sort() {
 		printf("\nSorry, I can't sort the PhoneBook. You have only ONE contact.\n");
 		return; // call menu()
 	} else {
-		while (node1 != NULL && node2 != NULL && node1->FirstName > node2->FirstName) {
-			if (strcmp(node2->FirstName, node1->FirstName) > 0)
-			{
-				// first name
-				strcpy(fn, node1->FirstName);
-				strcpy(node1->FirstName, node2->FirstName);
-				strcpy(node2->FirstName, fn);
-				// last name
-				strcpy(ln, node1->LastName);
-				strcpy(node1->LastName, node2->LastName);
-				strcpy(node2->LastName, ln);
-				// phone number
-				strcpy(p, node1->PhoneNumber);
-				strcpy(node1->PhoneNumber, node2->PhoneNumber);
-				strcpy(node2->PhoneNumber, p);
+		for(node1 = head; node1; node1 = node1->next) {
+			for(node2 = node1->next; node2; node2 = node2->next ) { 
+				// if the first value is bigger than the second value
+				if(strcmp(node1->FirstName, node2->FirstName) > 0) {
+					t = *node1; // store the value of the node1 pointer in t
+					*node1 = *node2; // swap the two values
+					*node2 = t; // the value that is initially stored by node1 pointer is passed to node2 pointer
+					
+					// swap node1 and node2 by swapping their next node links
+					temp = node1->next; 
+					node1->next = node2->next;
+					node2->next = temp;
+				}
 			}
-			node2 = node2->next; // move node2 to next
-			node1 = node1->next; // move node1 to next
 		}
+		ClearScreen(); // clear screen
+		printf("\nSorted contact list successfully.\n");
+		display();	// display sorted list
 	}
-	ClearScreen(); // clear screen
-	printf("\nContact list sorted successfully.\n");
-	display(); // display the sorted list
-	printf("\nNote: If there is contact not sorted correctly, please enter 3 again.\n");
 }
 
 /*
@@ -411,8 +399,8 @@ void menu() {
   // infinite loop
   for (;;) {
     color(7); printf("\n\t\t\t\t - You have"); // 7 = light gray
-    color(15); printf(" %d"); // 15 = white
-    color(7); printf(" contact(s) -\n", countContacts());
+    color(15); printf(" %d", countContacts()); // 15 = white
+    color(7); printf(" contact(s) -\n");
     color(11); printf("\n\n\t\t\t\t\t  MENU\t\t\n\n"); // 11 = light cyan
     color(14); printf("\n\t\t\t\t   PhoneBook Options"); // 14 = yellow
 	color(15); printf("\n\n\t[1]\t");
