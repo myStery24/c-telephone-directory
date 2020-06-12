@@ -454,7 +454,9 @@ void menu() {
       searchSelection();
       break;
     case 6:
-      printf("\nDelete all the contacts? (y/n): ");
+      printf("\nDelete all the contacts?");
+      color(15); printf(" (y/n)");
+      color(7); printf(": ");
       scanf("%1c", &ch);
       if (ch == 'y' || ch == 'Y') {
         deleteall();
@@ -462,7 +464,7 @@ void menu() {
       if (ch == 'n' || ch == 'N') {
         printf("\nNothing has been deleted.\n");
         printf("\n Press any key");
-        getch();
+        getch(); // get input from user's keyboard
       }
       break;
     case 7:
@@ -474,7 +476,7 @@ void menu() {
       break;
     }
     if (choice == 7) {
-      exit(0);
+      exit(0); // exit program successfully
       break;
     }
   }
