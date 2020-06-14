@@ -6,11 +6,11 @@ In this program, you can **add** a new record, **delete** an/ all existing recor
 ---
 1. This is a **default menu** with **7** options.
 
-								- You have [number] contact(s) -
+						  - You have [number] contact(s) -
 
-					     					MENU
+					     			MENU
 
-				      				PhoneBook Options
+				      			PhoneBook Options
 
         [1]	Create new contact
         [2]	Delete contact
@@ -49,7 +49,7 @@ In this program, you can **add** a new record, **delete** an/ all existing recor
 	You will be asked to enter the `contact's first name` and `contact's last name`. This is the display screen for deleting a contact:
 
 				----------------------------------------
-					  	   Deleting Contact
+					     Deleting Contact
 				----------------------------------------
 
 		Enter the contact's first name:
@@ -64,9 +64,9 @@ In this program, you can **add** a new record, **delete** an/ all existing recor
 
 		Contact deleted successfully.
 
-							  - You have [number - 1] contact(s) -
+					        - You have [number - 1] contact(s) -
 
-		     							  MENU
+		     					      MENU
 
 				      		   	PhoneBook Options
 
