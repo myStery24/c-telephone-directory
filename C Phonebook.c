@@ -1,6 +1,6 @@
 // Project: C phonebook
 // Fantastic 5
-// lee Zi Hui
+// Lee Zi Hui
 // AI190244
 // Last modified: 6/14/20 @ 4:12 PM
 
