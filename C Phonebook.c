@@ -2,7 +2,7 @@
 // Fantastic 5
 // lee Zi Hui
 // AI190244
-// Last modified: 6/13/20 @ 6:08 AM
+// Last modified: 6/14/20 @ 4:12 PM
 
 #include <stdio.h>
 #include <stdlib.h> // system() , exit()
@@ -296,7 +296,7 @@ int searchByName() {
     	flag = 1;
 		index++; // increment the index if not matched
 		if (strcmp(curNode->FirstName, searchFirstName) == 0 && strcmp(curNode->LastName, searchLastName) == 0) {
-			printf("\nContact found at position %d!\n", index);
+			// printf("\nContact found at position %d!\n", index);
 			printf("\nYou are looking for %s %s.\n", searchFirstName, searchLastName);
 			show(curNode->FirstName, curNode->LastName, curNode->PhoneNumber);
 		}
@@ -348,7 +348,7 @@ int searchByPhoneNumber() {
 		while(curNode != NULL && curNode->PhoneNumber != searchPhoneNumber) {
 			index++; // increment the index if not matched
 			if(strcmp(curNode->PhoneNumber, searchPhoneNumber) == 0) {
-				printf("\nFound at position %d", index);
+				// printf("\nFound at position %d!", index);
 				show(curNode->FirstName, curNode->LastName, curNode->PhoneNumber);
 			}
 			curNode = curNode->next; // move to next node
@@ -433,7 +433,7 @@ void menu() {
     color(15); printf("\n\t[7]\t");
     color(7); printf("Exit PhoneBook");
     color(7); printf("\n\nSelect an option from the menu");
-    color(15); printf(" [1 - 8]");
+    color(15); printf(" [1 - 7]");
     color(7); printf(": ");
     choice = atoi(fgets(toConvert, 20, stdin)); // scanf("%1d", &choice);
 
